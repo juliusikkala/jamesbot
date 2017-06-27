@@ -29,7 +29,7 @@ create it yourself. Take a look at the supplied jamesbot.cfg for a template.
 
 ## Authors
 
-- [juliusikkala][link-author]
+- [Julius Ikkala](https://github.com/juliusikkala)
 
 ## License
 
