@@ -1,13 +1,13 @@
 # JamesBot
 
-JamesBot is a Telegram bot that listens to all of the chat messages, stores a
-history of the messages to disk and does stuff with the intel it has gathered.
+JamesBot is a Telegram bot that wiretaps your channel, stores a history of the
+messages to disk and does stuff with the intel it has gathered.
 
 Right now, it doesn't do anything but log all messages.
 
 ## Features
 
-- [ ] Impersonation (generating messages with a markov chain)
+- [x] Impersonation (generating messages with a markov chain)
 - [ ] Reporting (forward messages to authenticated clients)
 - [ ] One-liners (respond with relevant one-liners)
 
