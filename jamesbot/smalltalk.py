@@ -170,8 +170,14 @@ def handle_smalltalk(bot, message, chat, job_queue, ctx):
     update_icebreaker_timer(chat, job_queue, ctx)
 
     #Handle responding
-    triggers = talkconfig.get("trigger_words", "").split(" ")
-    words = re.split('\W+', message.text)
+    triggers = map(
+        lambda w: w.lower(),
+        talkconfig.get("trigger_words", "").split(" ")
+    )
+    words = map(
+        lambda w: w.lower(),
+        re.split('\W+', message.text)
+    )
 
     if len([word for word in words if word in triggers]) > 0:
         try_smalltalk(bot, chat, ctx)
