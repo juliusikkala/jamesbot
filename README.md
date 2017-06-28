@@ -16,7 +16,7 @@ Right now, it doesn't do anything but log all messages.
 ## Usage
 
 ``` bash
-$ ./jamesbot.py [config.cfg]
+$ ./jamesbot/main.py [config.cfg]
 ```
 
 If no configuration file has been defined, the following locations will be

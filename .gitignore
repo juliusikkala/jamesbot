@@ -2,3 +2,4 @@ jamesbot.dev.cfg
 *.pyc
 *.swp
 tape
+__pycache__
