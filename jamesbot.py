@@ -108,12 +108,14 @@ class Chat:
         self.history_file.flush()
 
     def messages_from_user(self, user_id):
-        found = []
         for message in self.history:
             if message.user_id == user_id:
-                found.append(message.text)
+                yield message.text
 
-        return found
+    def all_messages(self):
+        for message in self.history:
+            yield message.text
+
 
     def find_user(self, ctx, mention):
         best_match = None
@@ -225,23 +227,29 @@ def record_message(bot, update, ctx):
 
 def impersonate_user(bot, update, args, ctx):
     chat = ctx.get_chat(update.message.chat_id)
-    if len(args) < 1 or len(args) > 2:
+
+    messages = []
+    if len(args) > 2:
         bot.send_message(
             chat_id=update.message.chat_id,
             text="I'm sorry, I didn't quite catch your drift."
         )
         return
+    elif len(args) == 0:
+        messages = chat.all_messages()
+    else: 
+        user = chat.find_user(ctx, " ".join(args))
+        
+        if user == None:
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text="I apologise, I have no recollection of that person."
+            )
+            return
+        messages = chat.messages_from_user(user.user_id)
     
-    user = chat.find_user(ctx, " ".join(args))
-    
-    if user == None:
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text="I apologise, I have no recollection of that person."
-        )
-        return
 
-    chain = MarkovChain.from_texts(chat.messages_from_user(user.user_id))
+    chain = MarkovChain.from_texts(messages)
     words = []
     for word in chain.generator():
         words.append(word)
