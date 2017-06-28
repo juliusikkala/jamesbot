@@ -10,6 +10,7 @@ Right now, it doesn't do anything but log all messages.
 ## Features
 
 - [x] Impersonation (generating messages with a markov chain)
+- [x] Smalltalk (sends generated messages on its own)
 - [ ] Reporting (forward messages to authenticated clients)
 - [ ] One-liners (respond with relevant one-liners)
 

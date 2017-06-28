@@ -14,4 +14,3 @@ class Message:
 
     def to_json(self):
         return json.dumps({"user_id": self.user_id, "text": self.text});
-

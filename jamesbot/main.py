@@ -18,58 +18,14 @@
 #along with JamesBot.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import configparser
-import os.path
 import logging
-import json
-from message import Message
-from markovchain import MarkovChain
 from context import Context
-from user import User
+from recording import record_message
+from impersonation import impersonate_user
+from smalltalk import smalltalk_control
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-def record_message(bot, update, ctx):
-    chat = ctx.get_chat(update.message.chat_id)
-    ctx.add_user(User.from_telegram(update.message.from_user))
-    chat.add_message(Message.from_telegram(update.message))
-
-def impersonate_user(bot, update, args, ctx):
-    chat = ctx.get_chat(update.message.chat_id)
-
-    messages = []
-    if len(args) > 2:
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text="I'm sorry, I didn't quite catch your drift."
-        )
-        return
-    elif len(args) == 0:
-        messages = chat.all_messages()
-    else: 
-        user = chat.find_user(ctx, " ".join(args))
-        
-        if user == None:
-            bot.send_message(
-                chat_id=update.message.chat_id,
-                text="I apologise, I have no recollection of that person."
-            )
-            return
-        messages = chat.messages_from_user(user.user_id)
-    
-
-    chain = MarkovChain.from_texts(messages)
-    words = []
-    for word in chain.generator():
-        words.append(word)
-    message = " ".join(words)
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=message
-    )
-
 def main(argv):
-    global history_dir
-
     local_config_path = None
 
     if len(argv) > 2:
@@ -88,21 +44,30 @@ def main(argv):
         level = logging.INFO
     )
 
-    #JamesBot never misses a thing.
-    recorder = MessageHandler(
-        Filters.all,
-        lambda bot, update: record_message(bot, update, ctx)
-    )
 
     #JamesBot sometimes responds to commands.
-    impersonate = CommandHandler(
+    dispatcher.add_handler(CommandHandler(
         'impersonate',
         lambda bot, update, args: impersonate_user(bot, update, args, ctx),
         pass_args=True
-    )
+    ))
+    dispatcher.add_handler(CommandHandler(
+        'smalltalk',
+        lambda bot, update, args: smalltalk_control(bot, update, args, ctx),
+        pass_args=True
+    ))
 
-    dispatcher.add_handler(impersonate)
-    dispatcher.add_handler(recorder)
+    #JamesBot never misses a thing.
+    dispatcher.add_handler(MessageHandler(
+        Filters.all,
+        lambda bot, update, job_queue: record_message(
+            bot,
+            update,
+            job_queue,
+            ctx
+        ),
+        pass_job_queue=True
+    ))
 
     updater.start_polling()
 

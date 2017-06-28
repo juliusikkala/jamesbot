@@ -1,31 +1,56 @@
 from message import Message
+import os.path
+import configparser
 
 class Chat:
-    def __init__(self, history_file):
-        self.history = []
-        self.history_file = open(history_file, 'a+')
-        self.history_file.seek(0)
+    def __init__(self, persistent_dir, chat_id):
+        self.chat_id = chat_id
+        self.idle_timer = None
+        self.config_path = os.path.join(
+            persistent_dir,
+            str(chat_id)+"_config.cfg"
+        )
+
+        self.messages_path = os.path.join(
+            persistent_dir,
+            str(chat_id)+"_messages.jsonl"
+        )
+
+        self.messages = []
+        self.messages_file = open(self.messages_path, 'a+')
+        self.messages_file.seek(0)
+
+        self.config = configparser.ConfigParser()
+        self.config.read(self.config_path)
+
+        if not self.config.has_section("Smalltalk"):
+            self.config.add_section("Smalltalk")
+
         self.users = set()
 
-        for line in self.history_file:
+        for line in self.messages_file:
             message = Message.from_json(line)
-            self.history.append(message)
+            self.messages.append(message)
             self.users.add(message.user_id)
 
 
+    def save_config(self):
+        with open(self.config_path, 'w') as f:
+            self.config.write(f)
+
     def add_message(self, message):
-        self.history.append(message)
+        self.messages.append(message)
         self.users.add(message.user_id)
-        self.history_file.write(message.to_json()+"\n")
-        self.history_file.flush()
+        self.messages_file.write(message.to_json()+"\n")
+        self.messages_file.flush()
 
     def messages_from_user(self, user_id):
-        for message in self.history:
+        for message in self.messages:
             if message.user_id == user_id:
                 yield message.text
 
     def all_messages(self):
-        for message in self.history:
+        for message in self.messages:
             yield message.text
 
 

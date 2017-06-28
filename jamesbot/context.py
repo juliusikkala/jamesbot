@@ -12,7 +12,6 @@ config_paths = [
 def read_config(local_path = None):
     config = configparser.ConfigParser()
 
-
     if local_path:
         if not os.path.isfile(local_path):
             raise Exception(
@@ -35,10 +34,13 @@ class Context:
         self.chats = {}
 
         self.config = read_config(local_config_path)
-        self.history_dir = self.config['General']['historydir']
+        self.persistent_dir = self.config['General']['persistent_dir']
 
         self.users = {}
-        self.users_file = open(os.path.join(self.history_dir, 'users'), 'a+')
+        self.users_file = open(
+            os.path.join(self.persistent_dir, 'users'),
+            'a+'
+        )
         self.users_file.seek(0)
 
         for line in self.users_file:
@@ -47,9 +49,7 @@ class Context:
 
     def get_chat(self, chat_id):
         if chat_id not in self.chats:
-            self.chats[chat_id] = Chat(
-                os.path.join(self.history_dir, str(chat_id))
-            )
+            self.chats[chat_id] = Chat(self.persistent_dir, chat_id)
         return self.chats[chat_id]
 
     def add_user(self, user):
