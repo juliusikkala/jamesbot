@@ -212,6 +212,8 @@ class MarkovChain:
     def from_texts(texts):
         sources = []
         for text in texts:
+            if not text:
+                continue
             words = text.split(' ')
             sources.append(words)
         return MarkovChain(sources)
