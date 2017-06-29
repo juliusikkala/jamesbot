@@ -20,7 +20,7 @@
 import sys
 import logging
 from context import Context
-from recording import record_message
+from recording import record_message, recording_control
 from impersonation import impersonate_user
 from smalltalk import smalltalk_control
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -49,6 +49,11 @@ def main(argv):
     dispatcher.add_handler(CommandHandler(
         'impersonate',
         lambda bot, update, args: impersonate_user(bot, update, args, ctx),
+        pass_args=True
+    ))
+    dispatcher.add_handler(CommandHandler(
+        'recording',
+        lambda bot, update, args: recording_control(bot, update, args, ctx),
         pass_args=True
     ))
     dispatcher.add_handler(CommandHandler(

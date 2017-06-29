@@ -30,6 +30,11 @@ searched:
 Note that no configuration file is generated automatically; you will have to
 create it yourself. Take a look at the supplied jamesbot.cfg for a template.
 
+In every chat JamesBot is in, you will have to enable some features separately
+if you want them. To enable recording, type `/recording start`. To enable
+smalltalk, type `/smalltalk start`. If you want to stop them, replace `start`
+with `stop`.
+
 ## Authors
 
 - [Julius Ikkala](https://github.com/juliusikkala)

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from markovchain import MarkovChain
 from impersonation import send_impersonated_message
+from helpers import have_common_words
 import random
 import re
 
@@ -139,13 +140,13 @@ def icebreaker(bot, job):
     update_icebreaker_timer(chat, job_queue, ctx)
 
 def update_icebreaker_timer(chat, job_queue, ctx):
-    talkconfig = chat.config["Smalltalk"]
+    config = chat.config["Smalltalk"]
 
     #Update ice breaker timer
     if chat.idle_timer:
         chat.idle_timer.schedule_removal()
 
-    wait = parse_time(talkconfig.get("ice_breaker_wait", "00:00:00"))
+    wait = parse_time(config.get("ice_breaker_wait", "00:00:00"))
 
     due = timedelta(
         hours = wait.hour,
@@ -163,25 +164,19 @@ def update_icebreaker_timer(chat, job_queue, ctx):
 
 def handle_smalltalk(bot, message, chat, job_queue, ctx):
     #Check if we should handle smalltalk
-    talkconfig = chat.config["Smalltalk"]
-    if talkconfig.get("enabled", "False") == "False":
+    config = chat.config["Smalltalk"]
+    if config.get("enabled", "False") == "False":
         return
 
     update_icebreaker_timer(chat, job_queue, ctx)
 
     #Handle responding
-    triggers = list(map(
-        lambda w: w.lower(),
-        talkconfig.get("trigger_words", "").split(" ")
-    ))
-    words = map(
-        lambda w: w.lower(),
-        re.split('\W+', message.text or "")
-    )
-    has_trigger = len([word for word in words if word in triggers]) > 0
-    if has_trigger:
+    if have_common_words(
+            re.split('\W+', message.text or ""),
+            config.get("trigger_words", "").split(" ")
+        ):
         try_smalltalk(bot, chat, ctx)
     else:
-        probability = float(talkconfig.get("response_likelihood", 0))
+        probability = float(config.get("response_likelihood", 0))
         if random.random() < probability:
             try_smalltalk(bot, chat, ctx)

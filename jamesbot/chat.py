@@ -23,6 +23,8 @@ class Chat:
         self.config = configparser.ConfigParser()
         self.config.read(self.config_path)
 
+        if not self.config.has_section("Recording"):
+            self.config.add_section("Recording")
         if not self.config.has_section("Smalltalk"):
             self.config.add_section("Smalltalk")
 
