@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-from markovchain import MarkovChain
-from impersonation import send_impersonated_message
+from message import MessageGenerator
 from helpers import have_common_words
 import random
 import re
@@ -128,8 +127,7 @@ def try_smalltalk(bot, chat, ctx):
         if time_in_range(time_range, current):
             return
         
-    chain = MarkovChain.from_texts(chat.all_messages())
-    send_impersonated_message(bot, chat.chat_id, chain)
+    MessageGenerator(chat.all_messages()).send(bot, chat.chat_id)
 
 def icebreaker(bot, job):
     chat = job.context[0]

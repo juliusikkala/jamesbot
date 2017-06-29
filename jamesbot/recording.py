@@ -30,10 +30,11 @@ def record_message(bot, update, job_queue, ctx):
         #Don't log or respond to failed commands
         return
 
+    #Smalltalk before recording to avoid repeating users
+    handle_smalltalk(bot, message, chat, job_queue, ctx)
+
     if can_record_message(message, chat):
         chat.add_message(Message.from_telegram(message))
-
-    handle_smalltalk(bot, message, chat, job_queue, ctx)
 
 def recording_control(bot, update, args, ctx):
     chat = ctx.get_chat(update.message.chat_id)

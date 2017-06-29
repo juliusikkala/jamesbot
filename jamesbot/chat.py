@@ -49,11 +49,11 @@ class Chat:
     def messages_from_user(self, user_id):
         for message in self.messages:
             if message.user_id == user_id:
-                yield message.text
+                yield message
 
     def all_messages(self):
         for message in self.messages:
-            yield message.text
+            yield message
 
 
     def find_user(self, ctx, mention):

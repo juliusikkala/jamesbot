@@ -1,16 +1,5 @@
 from markovchain import MarkovChain
 
-def send_impersonated_message(bot, chat_id, chain):
-    words = []
-    for word in chain.generator():
-        words.append(word)
-    message = " ".join(words)
-    bot.send_message(
-        chat_id=chat_id,
-        text=message
-    )
-
-
 def impersonate_user(bot, update, args, ctx):
     chat = ctx.get_chat(update.message.chat_id)
 
@@ -34,6 +23,4 @@ def impersonate_user(bot, update, args, ctx):
             return
         messages = chat.messages_from_user(user.user_id)
     
-
-    chain = MarkovChain.from_texts(messages)
-    send_impersonated_message(bot, update.message.chat_id, chain)
+    MessageGenerator(messages).send(bot, chat.chat_id)
