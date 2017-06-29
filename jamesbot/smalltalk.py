@@ -170,16 +170,16 @@ def handle_smalltalk(bot, message, chat, job_queue, ctx):
     update_icebreaker_timer(chat, job_queue, ctx)
 
     #Handle responding
-    triggers = map(
+    triggers = list(map(
         lambda w: w.lower(),
         talkconfig.get("trigger_words", "").split(" ")
-    )
+    ))
     words = map(
         lambda w: w.lower(),
-        re.split('\W+', message.text)
+        re.split('\W+', message.text or "")
     )
-
-    if len([word for word in words if word in triggers]) > 0:
+    has_trigger = len([word for word in words if word in triggers]) > 0
+    if has_trigger:
         try_smalltalk(bot, chat, ctx)
     else:
         probability = float(talkconfig.get("response_likelihood", 0))
