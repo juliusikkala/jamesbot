@@ -1,4 +1,4 @@
-from markovchain import MarkovChain
+from message import MessageGenerator
 
 def impersonate_user(bot, update, args, ctx):
     chat = ctx.get_chat(update.message.chat_id)
