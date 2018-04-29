@@ -128,10 +128,12 @@ def try_smalltalk(bot, chat, ctx, message):
             return
         
     if chat.model != None:
-        bot.send_message(
-            chat_id=chat.chat_id,
-            text=chat.model.generate_response(message.text)
-        )
+        response = chat.model.generate_response(message.text)
+        if response != None:
+            bot.send_message(
+                chat_id=chat.chat_id,
+                text=
+            )
     else:
         MessageGenerator(chat.all_messages()).send(bot, chat.chat_id)
 
