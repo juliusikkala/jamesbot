@@ -1,6 +1,7 @@
 from message import Message
 import os.path
 import configparser
+import inference
 
 class Chat:
     def __init__(self, persistent_dir, chat_id):
@@ -35,6 +36,12 @@ class Chat:
             self.messages.append(message)
             self.users.add(message.user_id)
 
+        st_config = self.config["Smalltalk"]
+        seq2seq_cfg = st_config.get('seq2seq', None)
+        if seq2seq_cfg:
+            self.model = inference.NeuralModel(seq2seq_cfg)
+        else:
+            self.model = None
 
     def save_config(self):
         with open(self.config_path, 'w') as f:

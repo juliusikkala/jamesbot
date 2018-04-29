@@ -113,7 +113,7 @@ def smalltalk_control(bot, update, args, ctx):
 
     chat.save_config()
 
-def try_smalltalk(bot, chat, ctx):
+def try_smalltalk(bot, chat, ctx, message):
     current = datetime.now().time()
     silent_times = map(
         parse_time_range,
@@ -127,14 +127,20 @@ def try_smalltalk(bot, chat, ctx):
         if time_in_range(time_range, current):
             return
         
-    MessageGenerator(chat.all_messages()).send(bot, chat.chat_id)
+    if chat.model != None:
+        bot.send_message(
+            chat_id=chat.chat_id,
+            text=chat.model.generate_response(message.text)
+        )
+    else:
+        MessageGenerator(chat.all_messages()).send(bot, chat.chat_id)
 
 def icebreaker(bot, job):
     chat = job.context[0]
     ctx = job.context[1]
     job_queue = job.context[2]
 
-    try_smalltalk(bot, chat, ctx)
+    try_smalltalk(bot, chat, ctx, "James, break the ice please.")
     update_icebreaker_timer(chat, job_queue, ctx)
 
 def update_icebreaker_timer(chat, job_queue, ctx):
@@ -173,8 +179,8 @@ def handle_smalltalk(bot, message, chat, job_queue, ctx):
             re.split('\W+', message.text or ""),
             config.get("trigger_words", "").split(" ")
         ):
-        try_smalltalk(bot, chat, ctx)
+        try_smalltalk(bot, chat, ctx, message)
     else:
         probability = float(config.get("response_likelihood", 0))
         if random.random() < probability:
-            try_smalltalk(bot, chat, ctx)
+            try_smalltalk(bot, chat, ctx, message)
