@@ -130,10 +130,7 @@ def try_smalltalk(bot, chat, ctx, message):
     if chat.model != None:
         response = chat.model.generate_response(message.text)
         if response != None:
-            bot.send_message(
-                chat_id=chat.chat_id,
-                text=
-            )
+            bot.send_message(chat_id=chat.chat_id, text=response)
     else:
         MessageGenerator(chat.all_messages()).send(bot, chat.chat_id)
 
